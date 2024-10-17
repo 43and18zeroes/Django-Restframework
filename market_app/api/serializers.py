@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from market_app.models import Market, Seller
+from market_app.models import Market, Seller, Product
 
 def validate_no_x(value):
     errors = []
@@ -56,9 +56,29 @@ class SellerCreateSerializer(serializers.Serializer):
         markets = Market.objects.filter(id__in=market_ids)
         seller.markets.set(markets)
         return seller
+   
+class ProductDetailSerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=255)
+    description = serializers.CharField()
+    price = serializers.DecimalField(max_digits=50, decimal_places=2)
+    markets = serializers.StringRelatedField(many=True)
+    sellers = serializers.StringRelatedField(many=True) 
     
-# {
-#     "name": "Seller1",
-#     "contact_info": "seller1@gmail.com",
-#     "markets": "[2]"
-# }
+"""
+Seller:
+{
+    "name": "Seller1",
+    "contact_info": "seller1@gmail.com",
+    "markets": "[2]"
+}
+
+
+Product:
+{
+    "name": "Product1",
+    "description": "This is a nice product",
+    "price": 10.00,
+    "markets": [2],
+    "sellers": [1]
+}
+"""
