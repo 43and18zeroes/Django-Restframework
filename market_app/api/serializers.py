@@ -64,6 +64,15 @@ class ProductDetailSerializer(serializers.Serializer):
     market = serializers.StringRelatedField()
     seller = serializers.StringRelatedField()
     
+    def update(self, instance, validated_data):
+        instance.name = validated_data.get('name', instance.name)
+        instance.description = validated_data.get('description', instance.description)
+        instance.price = validated_data.get('price', instance.price)
+        instance.market = validated_data.get('market', instance.market)
+        instance.seller = validated_data.get('seller', instance.seller)
+        instance.save()
+        return instance
+    
 class ProductCreateSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=255)
     description = serializers.CharField()
@@ -110,5 +119,13 @@ Product:
     "price": 10.00,
     "market": 2,
     "seller": 1
+}
+
+{
+    "name": "Product4",
+    "description": "This is an updated nice product",
+    "price": 10.00,
+    "market": 4,
+    "seller": 2
 }
 """
