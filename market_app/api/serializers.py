@@ -61,10 +61,10 @@ class ProductDetailSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=255)
     description = serializers.CharField()
     price = serializers.DecimalField(max_digits=50, decimal_places=2)
-    # market = serializers.StringRelatedField(many=True)
-    # seller = serializers.StringRelatedField(many=True) 
-    market = serializers.IntegerField(write_only=True)  # Expecting a single market ID
-    seller = serializers.IntegerField(write_only=True)
+    # market = serializers.PrimaryKeyRelatedField(queryset=Market.objects.all())  # Returns ID in GET request
+    # seller = serializers.PrimaryKeyRelatedField(queryset=Seller.objects.all())  # Returns ID in GET request
+    market = serializers.StringRelatedField()  # Show market name (assumes Market model has __str__ method)
+    seller = serializers.StringRelatedField()  # Show seller name (assumes Seller model has __str__ method)
     
 class ProductCreateSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=255)
