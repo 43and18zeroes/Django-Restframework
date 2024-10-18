@@ -72,7 +72,6 @@ class ProductCreateSerializer(serializers.Serializer):
     seller = serializers.IntegerField(write_only=True)
     
     def validate_market(self, value):
-        print(f"Market ID being validated: {value}")
         try:
             Market.objects.get(id=value)
         except Market.DoesNotExist:
