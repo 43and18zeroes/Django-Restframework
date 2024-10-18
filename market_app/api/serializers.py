@@ -61,15 +61,17 @@ class ProductDetailSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=255)
     description = serializers.CharField()
     price = serializers.DecimalField(max_digits=50, decimal_places=2)
-    market = serializers.StringRelatedField(many=True)
-    seller = serializers.StringRelatedField(many=True) 
+    # market = serializers.StringRelatedField(many=True)
+    # seller = serializers.StringRelatedField(many=True) 
+    market = serializers.IntegerField(write_only=True)  # Expecting a single market ID
+    seller = serializers.IntegerField(write_only=True)
     
 class ProductCreateSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=255)
     description = serializers.CharField()
     price = serializers.DecimalField(max_digits=50, decimal_places=2)
-    markets = serializers.ListField(child=serializers.IntegerField(), write_only=True)
-    sellers = serializers.ListField(child=serializers.IntegerField(), write_only=True)
+    market = serializers.ListField(child=serializers.IntegerField(), write_only=True)
+    seller = serializers.ListField(child=serializers.IntegerField(), write_only=True)
     # markets = serializers.IntegerField(write_only=True)  # Expecting a single market ID
     # sellers = serializers.IntegerField(write_only=True)
     
@@ -90,10 +92,10 @@ class ProductCreateSerializer(serializers.Serializer):
         market_ids = validated_data.pop('markets')
         seller_ids = validated_data.pop('sellers')
         product = Product.objects.create(**validated_data)
-        markets = Market.objects.filter(id__in=market_ids)
-        sellers = Seller.objects.filter(id__in=seller_ids)
-        product.markets.set(markets)
-        product.sellers.set(sellers)
+        market = Market.objects.filter(id__in=market_ids)
+        seller = Seller.objects.filter(id__in=seller_ids)
+        product.market.market
+        product.seller.seller
         return product
     
     # def create(self, validated_data):
@@ -126,7 +128,7 @@ Product:
     "name": "Product1",
     "description": "This is a nice product",
     "price": 10.00,
-    "markets": 2,
-    "sellers": 1
+    "market": 2,
+    "seller": 1
 }
 """
