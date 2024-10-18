@@ -74,3 +74,26 @@ def product_view(request):
             return Response(serializer.data)
         else:
             return Response(serializer.errors)
+        
+@api_view(['GET', 'DELETE', 'PUT'])
+def product_single_view(request, pk):
+    
+    if request.method == 'GET':
+        product = Product.objects.get(pk=pk)
+        serializer = ProductDetailSerializer(product)
+        return Response(serializer.data)
+    
+    # if request.method == 'PUT':
+    #     market = Market.objects.get(pk=pk)
+    #     serializer = MarketSerializer(market, data=request.data, partial=True)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         return Response(serializer.data)
+    #     else:
+    #         return Response(serializer.errors)
+    
+    if request.method == 'DELETE':
+        product = Product.objects.get(pk=pk)
+        serializer = ProductDetailSerializer(product)
+        product.delete()
+        return Response(serializer.data)
