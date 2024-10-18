@@ -70,48 +70,30 @@ class ProductCreateSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=255)
     description = serializers.CharField()
     price = serializers.DecimalField(max_digits=50, decimal_places=2)
-    market = serializers.ListField(child=serializers.IntegerField(), write_only=True)
-    seller = serializers.ListField(child=serializers.IntegerField(), write_only=True)
-    # markets = serializers.IntegerField(write_only=True)  # Expecting a single market ID
-    # sellers = serializers.IntegerField(write_only=True)
+    market = serializers.IntegerField(write_only=True)  # Expecting a single market ID
+    seller = serializers.IntegerField(write_only=True)  # Expecting a single seller ID
     
-    def validate_markets(self, value):
-        markets = Market.objects.filter(id__in=value)
-        if len(markets) != len(value):
-            raise serializers.ValidationError("Passt nicht mit den IDs")
+    def validate_market(self, value):
+        try:
+            Market.objects.get(id=value)
+        except Market.DoesNotExist:
+            raise serializers.ValidationError("Market ID does not exist")
         return value
-    
-    def validate_sellers(self, value):
-        sellers = Seller.objects.filter(id__in=value)
-        if len(sellers) != len(value):
-            raise serializers.ValidationError("Passt nicht mit den IDs")
+
+    def validate_seller(self, value):
+        try:
+            Seller.objects.get(id=value)
+        except Seller.DoesNotExist:
+            raise serializers.ValidationError("Seller ID does not exist")
         return value
-    
+
     def create(self, validated_data):
-        print(validated_data)
-        market_ids = validated_data.pop('markets')
-        seller_ids = validated_data.pop('sellers')
-        product = Product.objects.create(**validated_data)
-        market = Market.objects.filter(id__in=market_ids)
-        seller = Seller.objects.filter(id__in=seller_ids)
-        product.market.market
-        product.seller.seller
+        market_id = validated_data.pop('market')
+        seller_id = validated_data.pop('seller')
+        market = Market.objects.get(id=market_id)
+        seller = Seller.objects.get(id=seller_id)
+        product = Product.objects.create(market=market, seller=seller, **validated_data)
         return product
-    
-    # def create(self, validated_data):
-    #     # Extract market and seller IDs from validated data
-    #     print(validated_data)
-    #     market_id = validated_data.pop('markets')[0]  # Since it's a ForeignKey, it expects a single market, not a list
-    #     seller_id = validated_data.pop('sellers')[0]  # Similarly, extract a single seller
-        
-    #     # Fetch the Market and Seller instances
-    #     market = Market.objects.get(id=market_id)
-    #     seller = Seller.objects.get(id=seller_id)
-        
-    #     # Now create the product with market and seller included
-    #     product = Product.objects.create(market=market, seller=seller, **validated_data)
-        
-    #     return product
     
     
 """
