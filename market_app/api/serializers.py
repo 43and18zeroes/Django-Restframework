@@ -61,15 +61,31 @@ class ProductDetailSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=255)
     description = serializers.CharField()
     price = serializers.DecimalField(max_digits=50, decimal_places=2)
-    market = serializers.StringRelatedField()
-    seller = serializers.StringRelatedField()
+    market = serializers.IntegerField(write_only=True)  # Change to writable field
+    seller = serializers.IntegerField(write_only=True)  # Change to writable field
+    market_display = serializers.StringRelatedField(source='market', read_only=True)  # Keep the read-only display
+    seller_display = serializers.StringRelatedField(source='seller', read_only=True)  # Keep the read-only display
     
     def update(self, instance, validated_data):
         instance.name = validated_data.get('name', instance.name)
         instance.description = validated_data.get('description', instance.description)
         instance.price = validated_data.get('price', instance.price)
-        instance.market = validated_data.get('market', instance.market)
-        instance.seller = validated_data.get('seller', instance.seller)
+        
+        # Fetch and assign new market and seller
+        if 'market' in validated_data:
+            try:
+                market = Market.objects.get(id=validated_data['market'])
+                instance.market = market
+            except Market.DoesNotExist:
+                raise serializers.ValidationError("Market ID does not exist")
+        
+        if 'seller' in validated_data:
+            try:
+                seller = Seller.objects.get(id=validated_data['seller'])
+                instance.seller = seller
+            except Seller.DoesNotExist:
+                raise serializers.ValidationError("Seller ID does not exist")
+        
         instance.save()
         return instance
     
