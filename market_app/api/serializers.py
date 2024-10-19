@@ -4,7 +4,7 @@ from market_app.models import Market, Seller, Product
 class MarketSerializer(serializers.ModelSerializer):
     class Meta:
         model = Market
-        exclude = ['name', 'location', 'description']
+        exclude = []
         
     def validate_name(self, value):
         errors = []
@@ -19,6 +19,19 @@ class MarketSerializer(serializers.ModelSerializer):
         
         return value
     
+class SellerSerializer(serializers.ModelSerializer):
+    markets = MarketSerializer(many=True, read_only=True)
+    market_ids = serializers.PrimaryKeyRelatedField(
+        queryset=Market.objects.all(),
+        many=True,
+        write_only=True,
+        source='markets'
+    )
+    
+    class Meta:
+        models = Seller
+        exclude = []
+
 class SellerDetailSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     name = serializers.CharField(max_length=255)
