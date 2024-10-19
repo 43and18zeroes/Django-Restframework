@@ -62,12 +62,11 @@ class ProductDetailSerializer(serializers.Serializer):
     description = serializers.CharField()
     price = serializers.DecimalField(max_digits=50, decimal_places=2)
     
-    # Display names of market and seller instead of just IDs
-    market_display = serializers.CharField(source='market.name', read_only=True)  # Fetch market name
-    seller_display = serializers.CharField(source='seller.name', read_only=True)  # Fetch seller name
+    market_display = serializers.CharField(source='market.name', read_only=True) 
+    seller_display = serializers.CharField(source='seller.name', read_only=True) 
 
-    market = serializers.IntegerField(write_only=True)  # For POST/PUT requests, use ID
-    seller = serializers.IntegerField(write_only=True)  # For POST/PUT requests, use ID
+    market = serializers.IntegerField(write_only=True)
+    seller = serializers.IntegerField(write_only=True)
     
     def update(self, instance, validated_data):
         instance.name = validated_data.get('name', instance.name)
