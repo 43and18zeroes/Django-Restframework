@@ -4,7 +4,7 @@ from market_app.models import Market, Seller, Product
 class MarketSerializer(serializers.ModelSerializer):
     class Meta:
         model = Market
-        fields = ['id', 'name', 'location', 'description', 'net_worth']
+        exclude = ['name', 'location', 'description']
         
     def validate_name(self, value):
         errors = []
