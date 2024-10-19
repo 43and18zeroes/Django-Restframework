@@ -61,17 +61,16 @@ class ProductDetailSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=255)
     description = serializers.CharField()
     price = serializers.DecimalField(max_digits=50, decimal_places=2)
-    market = serializers.IntegerField(write_only=True)  # Change to writable field
-    seller = serializers.IntegerField(write_only=True)  # Change to writable field
-    market_display = serializers.StringRelatedField(source='market', read_only=True)  # Keep the read-only display
-    seller_display = serializers.StringRelatedField(source='seller', read_only=True)  # Keep the read-only display
+    market = serializers.IntegerField(write_only=True)
+    seller = serializers.IntegerField(write_only=True)
+    market_display = serializers.StringRelatedField(source='market', read_only=True)
+    seller_display = serializers.StringRelatedField(source='seller', read_only=True)
     
     def update(self, instance, validated_data):
         instance.name = validated_data.get('name', instance.name)
         instance.description = validated_data.get('description', instance.description)
         instance.price = validated_data.get('price', instance.price)
         
-        # Fetch and assign new market and seller
         if 'market' in validated_data:
             try:
                 market = Market.objects.get(id=validated_data['market'])
