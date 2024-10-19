@@ -29,33 +29,33 @@ class SellerSerializer(serializers.ModelSerializer):
     )
     
     class Meta:
-        models = Seller
+        model = Seller
         exclude = []
 
-class SellerDetailSerializer(serializers.Serializer):
-    id = serializers.IntegerField(read_only=True)
-    name = serializers.CharField(max_length=255)
-    contact_info = serializers.CharField()
-    # markets = MarketSerializer(many=True, read_only=True)
-    markets = serializers.StringRelatedField(many=True)
+# class SellerDetailSerializer(serializers.Serializer):
+#     id = serializers.IntegerField(read_only=True)
+#     name = serializers.CharField(max_length=255)
+#     contact_info = serializers.CharField()
+#     # markets = MarketSerializer(many=True, read_only=True)
+#     markets = serializers.StringRelatedField(many=True)
     
-class SellerCreateSerializer(serializers.Serializer):
-    name = serializers.CharField(max_length=255)
-    contact_info = serializers.CharField()
-    markets = serializers.ListField(child=serializers.IntegerField(), write_only=True)
+# class SellerCreateSerializer(serializers.Serializer):
+#     name = serializers.CharField(max_length=255)
+#     contact_info = serializers.CharField()
+#     markets = serializers.ListField(child=serializers.IntegerField(), write_only=True)
     
-    def validate_markets(self, value):
-        markets = Market.objects.filter(id__in=value)
-        if len(markets) != len(value):
-            raise serializers.ValidationError("Passt nicht mit den IDs")
-        return value
+#     def validate_markets(self, value):
+#         markets = Market.objects.filter(id__in=value)
+#         if len(markets) != len(value):
+#             raise serializers.ValidationError("Passt nicht mit den IDs")
+#         return value
     
-    def create(self, validated_data):
-        market_ids = validated_data.pop('markets')
-        seller = Seller.objects.create(**validated_data)
-        markets = Market.objects.filter(id__in=market_ids)
-        seller.markets.set(markets)
-        return seller
+#     def create(self, validated_data):
+#         market_ids = validated_data.pop('markets')
+#         seller = Seller.objects.create(**validated_data)
+#         markets = Market.objects.filter(id__in=market_ids)
+#         seller.markets.set(markets)
+#         return seller
     
 class ProductDetailSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=255)
@@ -123,9 +123,9 @@ class ProductCreateSerializer(serializers.Serializer):
 """
 Seller:
 {
-    "name": "Seller1",
-    "contact_info": "seller1@gmail.com",
-    "markets": "[2]"
+    "name": "Sellernew",
+    "contact_info": "sellernew@gmail.com",
+    "market_ids": [2, 3]
 }
 
 
