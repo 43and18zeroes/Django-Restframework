@@ -37,30 +37,6 @@ class SellerSerializer(serializers.ModelSerializer):
     def get_market_count(self, obj):
         return obj.markets.count()
 
-# class SellerDetailSerializer(serializers.Serializer):
-#     id = serializers.IntegerField(read_only=True)
-#     name = serializers.CharField(max_length=255)
-#     contact_info = serializers.CharField()
-#     # markets = MarketSerializer(many=True, read_only=True)
-#     markets = serializers.StringRelatedField(many=True)
-    
-# class SellerCreateSerializer(serializers.Serializer):
-#     name = serializers.CharField(max_length=255)
-#     contact_info = serializers.CharField()
-#     markets = serializers.ListField(child=serializers.IntegerField(), write_only=True)
-    
-#     def validate_markets(self, value):
-#         markets = Market.objects.filter(id__in=value)
-#         if len(markets) != len(value):
-#             raise serializers.ValidationError("Passt nicht mit den IDs")
-#         return value
-    
-#     def create(self, validated_data):
-#         market_ids = validated_data.pop('markets')
-#         seller = Seller.objects.create(**validated_data)
-#         markets = Market.objects.filter(id__in=market_ids)
-#         seller.markets.set(markets)
-#         return seller
     
 class ProductDetailSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=255)
