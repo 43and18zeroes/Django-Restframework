@@ -10,7 +10,7 @@ def markets_view(request):
 
     if request.method == 'GET':
         markets = Market.objects.all()
-        serializer = MarketHyperlinkedSerializer(markets, many=True, context={'request': request})
+        serializer = MarketHyperlinkedSerializer(markets, many=True, context={'request': request}, fields=('id', 'net_worth'))
         return Response(serializer.data)
 
     if request.method == 'POST':
