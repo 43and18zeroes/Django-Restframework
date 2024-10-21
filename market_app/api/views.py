@@ -1,7 +1,7 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import MarketSerializer, SellerSerializer, ProductDetailSerializer, ProductCreateSerializer
+from .serializers import MarketSerializer, SellerSerializer, ProductDetailSerializer, ProductCreateSerializer, MarketHyperlinkedSerializer
 from market_app.models import Market, Seller, Product
 
 
@@ -10,7 +10,7 @@ def markets_view(request):
 
     if request.method == 'GET':
         markets = Market.objects.all()
-        serializer = MarketSerializer(markets, many=True)
+        serializer = MarketHyperlinkedSerializer(markets, many=True, context={'request': request}, fields=('id', 'net_worth'))
         return Response(serializer.data)
 
     if request.method == 'POST':
@@ -23,11 +23,11 @@ def markets_view(request):
 
 
 @api_view(['GET', 'DELETE', 'PUT'])
-def market_single_view(request, pk):
+def markets_single_view(request, pk):
 
     if request.method == 'GET':
         market = Market.objects.get(pk=pk)
-        serializer = MarketSerializer(market)
+        serializer = MarketSerializer(market, context={'request': request})
         return Response(serializer.data)
 
     if request.method == 'PUT':
@@ -64,7 +64,7 @@ def sellers_view(request):
 
 
 @api_view(['GET', 'DELETE', 'PUT'])
-def seller_single_view(request, pk):
+def sellers_single_view(request, pk):
 
     try:
         seller = Seller.objects.get(pk=pk)
@@ -98,7 +98,7 @@ def seller_single_view(request, pk):
 
 
 @api_view(['GET', 'POST'])
-def product_view(request):
+def products_view(request):
 
     if request.method == 'GET':
         products = Product.objects.all()
@@ -115,7 +115,7 @@ def product_view(request):
 
 
 @api_view(['GET', 'DELETE', 'PUT'])
-def product_single_view(request, pk):
+def products_single_view(request, pk):
 
     if request.method == 'GET':
         product = Product.objects.get(pk=pk)

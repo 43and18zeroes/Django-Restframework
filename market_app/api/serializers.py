@@ -2,9 +2,26 @@ from rest_framework import serializers
 from market_app.models import Market, Seller, Product
 
 class MarketSerializer(serializers.ModelSerializer):
+    
+    sellers = serializers.StringRelatedField(many=True, read_only=True)
+    
+    def __init__(self, *args, **kwargs):
+        # Don't pass the 'fields' arg up to the superclass
+        fields = kwargs.pop('fields', None)
+
+        # Instantiate the superclass normally
+        super().__init__(*args, **kwargs)
+
+        if fields is not None:
+            # Drop any fields that are not specified in the `fields` argument.
+            allowed = set(fields)
+            existing = set(self.fields)
+            for field_name in existing - allowed:
+                self.fields.pop(field_name)
+    
     class Meta:
         model = Market
-        exclude = []
+        fields = ['id', 'url', 'name', 'location', 'description', 'net_worth']
         
     def validate_name(self, value):
         errors = []
@@ -19,6 +36,12 @@ class MarketSerializer(serializers.ModelSerializer):
         
         return value
     
+class MarketHyperlinkedSerializer(MarketSerializer, serializers.HyperlinkedModelSerializer):
+    sellers = None    
+    class Meta:
+        model = Market
+        exclude = ['location']
+        
 class SellerSerializer(serializers.ModelSerializer):
     markets = MarketSerializer(many=True, read_only=True)
     market_ids = serializers.PrimaryKeyRelatedField(
@@ -30,6 +53,8 @@ class SellerSerializer(serializers.ModelSerializer):
     
     market_count = serializers.SerializerMethodField()
     
+    market_count = serializers.SerializerMethodField()
+    
     class Meta:
         model = Seller
         exclude = []
@@ -37,92 +62,76 @@ class SellerSerializer(serializers.ModelSerializer):
     def get_market_count(self, obj):
         return obj.markets.count()
 
-# class SellerDetailSerializer(serializers.Serializer):
-#     id = serializers.IntegerField(read_only=True)
-#     name = serializers.CharField(max_length=255)
-#     contact_info = serializers.CharField()
-#     # markets = MarketSerializer(many=True, read_only=True)
-#     markets = serializers.StringRelatedField(many=True)
     
-# class SellerCreateSerializer(serializers.Serializer):
-#     name = serializers.CharField(max_length=255)
-#     contact_info = serializers.CharField()
-#     markets = serializers.ListField(child=serializers.IntegerField(), write_only=True)
-    
-#     def validate_markets(self, value):
-#         markets = Market.objects.filter(id__in=value)
-#         if len(markets) != len(value):
-#             raise serializers.ValidationError("Passt nicht mit den IDs")
-#         return value
-    
-#     def create(self, validated_data):
-#         market_ids = validated_data.pop('markets')
-#         seller = Seller.objects.create(**validated_data)
-#         markets = Market.objects.filter(id__in=market_ids)
-#         seller.markets.set(markets)
-#         return seller
-    
-class ProductDetailSerializer(serializers.Serializer):
-    name = serializers.CharField(max_length=255)
-    description = serializers.CharField()
-    price = serializers.DecimalField(max_digits=50, decimal_places=2)
-    
-    market_display = serializers.CharField(source='market.name', read_only=True) 
-    seller_display = serializers.CharField(source='seller.name', read_only=True) 
-
-    market = serializers.IntegerField(write_only=True)
-    seller = serializers.IntegerField(write_only=True)
-    
-    def update(self, instance, validated_data):
-        instance.name = validated_data.get('name', instance.name)
-        instance.description = validated_data.get('description', instance.description)
-        instance.price = validated_data.get('price', instance.price)
+class ProductDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = '__all__'
         
-        if 'market' in validated_data:
-            try:
-                market = Market.objects.get(id=validated_data['market'])
-                instance.market = market
-            except Market.DoesNotExist:
-                raise serializers.ValidationError("Market ID does not exist")
-        
-        if 'seller' in validated_data:
-            try:
-                seller = Seller.objects.get(id=validated_data['seller'])
-                instance.seller = seller
-            except Seller.DoesNotExist:
-                raise serializers.ValidationError("Seller ID does not exist")
-        
-        instance.save()
-        return instance
+    # name = serializers.CharField(max_length=255)
+    # description = serializers.CharField()
+    # price = serializers.DecimalField(max_digits=50, decimal_places=2)
     
-class ProductCreateSerializer(serializers.Serializer):
-    name = serializers.CharField(max_length=255)
-    description = serializers.CharField()
-    price = serializers.DecimalField(max_digits=50, decimal_places=2)
-    market = serializers.IntegerField(write_only=True)
-    seller = serializers.IntegerField(write_only=True)
+    # market_display = serializers.CharField(source='market.name', read_only=True) 
+    # seller_display = serializers.CharField(source='seller.name', read_only=True) 
+
+    # market = serializers.IntegerField(write_only=True)
+    # seller = serializers.IntegerField(write_only=True)
     
-    def validate_market(self, value):
-        try:
-            Market.objects.get(id=value)
-        except Market.DoesNotExist:
-            raise serializers.ValidationError("Market ID does not exist")
-        return value
+    # def update(self, instance, validated_data):
+    #     instance.name = validated_data.get('name', instance.name)
+    #     instance.description = validated_data.get('description', instance.description)
+    #     instance.price = validated_data.get('price', instance.price)
+        
+    #     if 'market' in validated_data:
+    #         try:
+    #             market = Market.objects.get(id=validated_data['market'])
+    #             instance.market = market
+    #         except Market.DoesNotExist:
+    #             raise serializers.ValidationError("Market ID does not exist")
+        
+    #     if 'seller' in validated_data:
+    #         try:
+    #             seller = Seller.objects.get(id=validated_data['seller'])
+    #             instance.seller = seller
+    #         except Seller.DoesNotExist:
+    #             raise serializers.ValidationError("Seller ID does not exist")
+        
+    #     instance.save()
+    #     return instance
+    
+class ProductCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = '__all__'
+        
+    # name = serializers.CharField(max_length=255)
+    # description = serializers.CharField()
+    # price = serializers.DecimalField(max_digits=50, decimal_places=2)
+    # market = serializers.IntegerField(write_only=True)
+    # seller = serializers.IntegerField(write_only=True)
+    
+    # def validate_market(self, value):
+    #     try:
+    #         Market.objects.get(id=value)
+    #     except Market.DoesNotExist:
+    #         raise serializers.ValidationError("Market ID does not exist")
+    #     return value
 
-    def validate_seller(self, value):
-        try:
-            Seller.objects.get(id=value)
-        except Seller.DoesNotExist:
-            raise serializers.ValidationError("Seller ID does not exist")
-        return value
+    # def validate_seller(self, value):
+    #     try:
+    #         Seller.objects.get(id=value)
+    #     except Seller.DoesNotExist:
+    #         raise serializers.ValidationError("Seller ID does not exist")
+    #     return value
 
-    def create(self, validated_data):
-        market_id = validated_data.pop('market')
-        seller_id = validated_data.pop('seller')
-        market = Market.objects.get(id=market_id)
-        seller = Seller.objects.get(id=seller_id)
-        product = Product.objects.create(market=market, seller=seller, **validated_data)
-        return product
+    # def create(self, validated_data):
+    #     market_id = validated_data.pop('market')
+    #     seller_id = validated_data.pop('seller')
+    #     market = Market.objects.get(id=market_id)
+    #     seller = Seller.objects.get(id=seller_id)
+    #     product = Product.objects.create(market=market, seller=seller, **validated_data)
+    #     return product
     
     
 """
