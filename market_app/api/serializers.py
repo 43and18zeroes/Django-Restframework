@@ -61,16 +61,20 @@ class SellerSerializer(serializers.ModelSerializer):
         return obj.markets.count()
 
     
-class ProductDetailSerializer(serializers.Serializer):
-    name = serializers.CharField(max_length=255)
-    description = serializers.CharField()
-    price = serializers.DecimalField(max_digits=50, decimal_places=2)
+class ProductDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = '__all__'
+        
+    # name = serializers.CharField(max_length=255)
+    # description = serializers.CharField()
+    # price = serializers.DecimalField(max_digits=50, decimal_places=2)
     
-    market_display = serializers.CharField(source='market.name', read_only=True) 
-    seller_display = serializers.CharField(source='seller.name', read_only=True) 
+    # market_display = serializers.CharField(source='market.name', read_only=True) 
+    # seller_display = serializers.CharField(source='seller.name', read_only=True) 
 
-    market = serializers.IntegerField(write_only=True)
-    seller = serializers.IntegerField(write_only=True)
+    # market = serializers.IntegerField(write_only=True)
+    # seller = serializers.IntegerField(write_only=True)
     
     def update(self, instance, validated_data):
         instance.name = validated_data.get('name', instance.name)
@@ -94,34 +98,38 @@ class ProductDetailSerializer(serializers.Serializer):
         instance.save()
         return instance
     
-class ProductCreateSerializer(serializers.Serializer):
-    name = serializers.CharField(max_length=255)
-    description = serializers.CharField()
-    price = serializers.DecimalField(max_digits=50, decimal_places=2)
-    market = serializers.IntegerField(write_only=True)
-    seller = serializers.IntegerField(write_only=True)
+class ProductCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = '__all__'
+        
+    # name = serializers.CharField(max_length=255)
+    # description = serializers.CharField()
+    # price = serializers.DecimalField(max_digits=50, decimal_places=2)
+    # market = serializers.IntegerField(write_only=True)
+    # seller = serializers.IntegerField(write_only=True)
     
-    def validate_market(self, value):
-        try:
-            Market.objects.get(id=value)
-        except Market.DoesNotExist:
-            raise serializers.ValidationError("Market ID does not exist")
-        return value
+    # def validate_market(self, value):
+    #     try:
+    #         Market.objects.get(id=value)
+    #     except Market.DoesNotExist:
+    #         raise serializers.ValidationError("Market ID does not exist")
+    #     return value
 
-    def validate_seller(self, value):
-        try:
-            Seller.objects.get(id=value)
-        except Seller.DoesNotExist:
-            raise serializers.ValidationError("Seller ID does not exist")
-        return value
+    # def validate_seller(self, value):
+    #     try:
+    #         Seller.objects.get(id=value)
+    #     except Seller.DoesNotExist:
+    #         raise serializers.ValidationError("Seller ID does not exist")
+    #     return value
 
-    def create(self, validated_data):
-        market_id = validated_data.pop('market')
-        seller_id = validated_data.pop('seller')
-        market = Market.objects.get(id=market_id)
-        seller = Seller.objects.get(id=seller_id)
-        product = Product.objects.create(market=market, seller=seller, **validated_data)
-        return product
+    # def create(self, validated_data):
+    #     market_id = validated_data.pop('market')
+    #     seller_id = validated_data.pop('seller')
+    #     market = Market.objects.get(id=market_id)
+    #     seller = Seller.objects.get(id=seller_id)
+    #     product = Product.objects.create(market=market, seller=seller, **validated_data)
+    #     return product
     
     
 """
