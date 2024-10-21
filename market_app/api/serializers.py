@@ -76,27 +76,27 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     # market = serializers.IntegerField(write_only=True)
     # seller = serializers.IntegerField(write_only=True)
     
-    def update(self, instance, validated_data):
-        instance.name = validated_data.get('name', instance.name)
-        instance.description = validated_data.get('description', instance.description)
-        instance.price = validated_data.get('price', instance.price)
+    # def update(self, instance, validated_data):
+    #     instance.name = validated_data.get('name', instance.name)
+    #     instance.description = validated_data.get('description', instance.description)
+    #     instance.price = validated_data.get('price', instance.price)
         
-        if 'market' in validated_data:
-            try:
-                market = Market.objects.get(id=validated_data['market'])
-                instance.market = market
-            except Market.DoesNotExist:
-                raise serializers.ValidationError("Market ID does not exist")
+    #     if 'market' in validated_data:
+    #         try:
+    #             market = Market.objects.get(id=validated_data['market'])
+    #             instance.market = market
+    #         except Market.DoesNotExist:
+    #             raise serializers.ValidationError("Market ID does not exist")
         
-        if 'seller' in validated_data:
-            try:
-                seller = Seller.objects.get(id=validated_data['seller'])
-                instance.seller = seller
-            except Seller.DoesNotExist:
-                raise serializers.ValidationError("Seller ID does not exist")
+    #     if 'seller' in validated_data:
+    #         try:
+    #             seller = Seller.objects.get(id=validated_data['seller'])
+    #             instance.seller = seller
+    #         except Seller.DoesNotExist:
+    #             raise serializers.ValidationError("Seller ID does not exist")
         
-        instance.save()
-        return instance
+    #     instance.save()
+    #     return instance
     
 class ProductCreateSerializer(serializers.ModelSerializer):
     class Meta:
