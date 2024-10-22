@@ -6,6 +6,7 @@ from market_app.models import Market, Seller, Product
 from rest_framework import mixins
 from rest_framework import generics
 
+
 class MarketsView(mixins.ListModelMixin,
                   mixins.CreateModelMixin,
                   generics.GenericAPIView):
@@ -18,22 +19,6 @@ class MarketsView(mixins.ListModelMixin,
 
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
-
-# @api_view(['GET', 'POST'])
-# def markets_view(request):
-
-#     if request.method == 'GET':
-#         markets = Market.objects.all()
-#         serializer = MarketHyperlinkedSerializer(markets, many=True, context={'request': request}, fields=('id', 'net_worth'))
-#         return Response(serializer.data)
-
-#     if request.method == 'POST':
-#         serializer = MarketSerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data)
-#         else:
-#             return Response(serializer.errors)
 
 
 @api_view(['GET', 'DELETE', 'PUT'])
@@ -59,6 +44,7 @@ def markets_single_view(request, pk):
         market.delete()
         return Response(serializer.data)
 
+
 class SellerView(mixins.ListModelMixin,
                   mixins.CreateModelMixin,
                   generics.GenericAPIView):
@@ -71,22 +57,6 @@ class SellerView(mixins.ListModelMixin,
 
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
-
-# @api_view(['GET', 'POST'])
-# def sellers_view(request):
-
-#     if request.method == 'GET':
-#         sellers = Seller.objects.all()
-#         serializer = SellerSerializer(sellers, many=True)
-#         return Response(serializer.data)
-
-#     if request.method == 'POST':
-#         serializer = SellerSerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data)
-#         else:
-#             return Response(serializer.errors)
 
 
 @api_view(['GET', 'DELETE', 'PUT'])
