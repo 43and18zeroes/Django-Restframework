@@ -21,6 +21,13 @@ class MarketsView(mixins.ListModelMixin,
         return self.create(request, *args, **kwargs)
 
 
+class SnippetDetail(mixins.RetrieveModelMixin,
+                    mixins.UpdateModelMixin,
+                    mixins.DestroyModelMixin,
+                    generics.GenericAPIView):
+    pass
+
+
 @api_view(['GET', 'DELETE', 'PUT'])
 def markets_single_view(request, pk):
 
