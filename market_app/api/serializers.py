@@ -3,7 +3,7 @@ from market_app.models import Market, Seller, Product
 
 class MarketSerializer(serializers.ModelSerializer):
     
-    sellers = serializers.StringRelatedField(many=True, read_only=True)
+    # sellers = serializers.StringRelatedField(many=True, read_only=True)
     
     def __init__(self, *args, **kwargs):
         # Don't pass the 'fields' arg up to the superclass
