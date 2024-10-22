@@ -21,7 +21,7 @@ class MarketSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Market
-        fields = ['id', 'url', 'name', 'location', 'description', 'net_worth']
+        fields = ['id', 'sellers', 'url', 'name', 'location', 'description', 'net_worth']
         
     def validate_name(self, value):
         errors = []
@@ -37,7 +37,7 @@ class MarketSerializer(serializers.ModelSerializer):
         return value
     
 class MarketHyperlinkedSerializer(MarketSerializer, serializers.HyperlinkedModelSerializer):
-    sellers = None    
+    # sellers = None
     class Meta:
         model = Market
         exclude = ['location']

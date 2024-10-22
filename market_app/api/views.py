@@ -8,37 +8,22 @@ from rest_framework import generics
 
 
 class MarketsView(generics.ListAPIView):
-    
     queryset = Market.objects.all()
     serializer_class = MarketSerializer
-    
-    # def get(self, request, *args, **kwargs):
-    #     return self.list(request, *args, **kwargs)
-
-    # def post(self, request, *args, **kwargs):
-    #     return self.create(request, *args, **kwargs)
 
 
 class MarketsSingleView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Market.objects.all()
     serializer_class = MarketSerializer
-
-
-# class MarketsSingleView(mixins.RetrieveModelMixin,
-#                     mixins.UpdateModelMixin,
-#                     mixins.DestroyModelMixin,
-#                     generics.GenericAPIView):
-#     queryset = Market.objects.all()
-#     serializer_class = MarketSerializer
-
-#     def get(self, request, *args, **kwargs):
-#         return self.retrieve(request, *args, **kwargs)
-
-#     def put(self, request, *args, **kwargs):
-#         return self.update(request, *args, **kwargs)
-
-#     def delete(self, request, *args, **kwargs):
-#         return self.destroy(request, *args, **kwargs)
+    
+    
+class SellerOfMarketList(generics.ListAPIView):
+    serializer_class = SellerSerializer
+    
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+        market = Market.objects.get(pk = pk)
+        return market.sellers.all()
 
 
 class SellerView(mixins.ListModelMixin,
