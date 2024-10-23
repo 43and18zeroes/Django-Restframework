@@ -65,13 +65,13 @@ class ProductDetailSerializer(serializers.ModelSerializer):
 class ProductCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields  = ["id", "name", "market_count", "markets", "contact_info"]       
+        fields = '__all__'
    
    
-class SellerListSerializer(SellerSerializer):
+class SellerListSerializer(SellerSerializer, serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Seller
-        fields  = ["id", "name", "market_ids", "market_count", "contact_info"]       
+        fields  = ["url", "name", "market_ids", "market_count", "contact_info"]       
     
 """
 Seller:

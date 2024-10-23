@@ -8,5 +8,5 @@ urlpatterns = [
     path('seller/', SellerView.as_view()),
     path('seller/<int:pk>/', sellers_single_view, name='seller_single'),
     path('product/', products_view),
-    path('product/<int:pk>/', products_single_view),
+    path('product/<int:pk>/', products_single_view, name='seller-detail'),
 ]
