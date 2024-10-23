@@ -17,13 +17,18 @@ class MarketsSingleView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = MarketSerializer
     
     
-class SellerOfMarketList(generics.ListAPIView):
+class SellerOfMarketList(generics.ListCreateAPIView):
     serializer_class = SellerListSerializer
     
     def get_queryset(self):
         pk = self.kwargs.get('pk')
         market = Market.objects.get(pk = pk)
         return market.sellers.all()
+    
+    def perform_create(self, serializer):
+        pk = self.kwargs.get('pk')
+        market = Market.objects.get(pk = pk)
+        serializer.save(markets=[market])
 
 
 class SellerView(mixins.ListModelMixin,
