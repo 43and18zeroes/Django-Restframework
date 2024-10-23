@@ -1,10 +1,12 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import MarketSerializer, SellerSerializer, ProductDetailSerializer, ProductCreateSerializer, SellerListSerializer
+from .serializers import MarketSerializer, SellerSerializer, ProductSerializer, SellerListSerializer
 from market_app.models import Market, Seller, Product
 from rest_framework import mixins
 from rest_framework import generics
+from django.shortcuts import get_object_or_404
+from rest_framework import viewsets
 
 
 class MarketsView(generics.ListAPIView):
@@ -77,45 +79,71 @@ def sellers_single_view(request, pk):
     if request.method == 'DELETE':
         seller.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-@api_view(['GET', 'POST'])
-def products_view(request):
-
-    if request.method == 'GET':
-        products = Product.objects.all()
-        serializer = ProductDetailSerializer(products, many=True)
+    
+class ProductViewSet(viewsets.ViewSet):
+    queryset = Product.objects.all()
+    
+    def list(self, request):
+        serializer = ProductSerializer(self.queryset, many=True)
         return Response(serializer.data)
 
-    if request.method == 'POST':
-        serializer = ProductCreateSerializer(data=request.data)
+    def retrieve(self, request, pk=None):
+        product = get_object_or_404(self.queryset, pk=pk)
+        serializer = ProductSerializer(product)
+        return Response(serializer.data)
+    
+    def create(self, request):
+        serializer = ProductSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         else:
             return Response(serializer.errors)
-
-
-@api_view(['GET', 'DELETE', 'PUT'])
-def products_single_view(request, pk):
-
-    if request.method == 'GET':
-        product = Product.objects.get(pk=pk)
-        serializer = ProductDetailSerializer(product)
-        return Response(serializer.data)
-
-    if request.method == 'PUT':
-        product = Product.objects.get(pk=pk)
-        serializer = ProductDetailSerializer(
-            product, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        else:
-            return Response(serializer.errors)
-
-    if request.method == 'DELETE':
-        product = Product.objects.get(pk=pk)
-        serializer = ProductDetailSerializer(product)
+    
+    def destroy(self, request, pk=None):
+        product = get_object_or_404(self.queryset, pk=pk)
+        serializer = ProductSerializer(product)
         product.delete()
         return Response(serializer.data)
+
+
+# @api_view(['GET', 'POST'])
+# def products_view(request):
+
+#     if request.method == 'GET':
+#         products = Product.objects.all()
+#         serializer = ProductDetailSerializer(products, many=True)
+#         return Response(serializer.data)
+
+#     if request.method == 'POST':
+#         serializer = ProductCreateSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data)
+#         else:
+#             return Response(serializer.errors)
+
+
+# @api_view(['GET', 'DELETE', 'PUT'])
+# def products_single_view(request, pk):
+
+#     if request.method == 'GET':
+#         product = Product.objects.get(pk=pk)
+#         serializer = ProductDetailSerializer(product)
+#         return Response(serializer.data)
+
+#     if request.method == 'PUT':
+#         product = Product.objects.get(pk=pk)
+#         serializer = ProductDetailSerializer(
+#             product, data=request.data, partial=True)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data)
+#         else:
+#             return Response(serializer.errors)
+
+#     if request.method == 'DELETE':
+#         product = Product.objects.get(pk=pk)
+#         serializer = ProductDetailSerializer(product)
+#         product.delete()
+#         return Response(serializer.data)
