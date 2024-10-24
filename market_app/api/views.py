@@ -8,7 +8,12 @@ from rest_framework import generics
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 
-class ProductViewSet(viewsets.ModelViewSet):
+class ListRetrieveViewSet(mixins.ListModelMixin,
+                                mixins.RetrieveModelMixin,
+                                viewsets.GenericViewSet):
+    pass
+
+class ProductViewSet(ListRetrieveViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     
