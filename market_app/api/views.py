@@ -39,6 +39,15 @@ class SellerOfMarketList(generics.ListCreateAPIView):
         serializer.save(markets=[market])
 
 
+class SellerListView(generics.ListCreateAPIView):
+    queryset = Seller.objects.all()
+    serializer_class = SellerSerializer
+    
+    
+class SellerDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Seller.objects.all()
+    serializer_class = SellerSerializer
+
 class SellerView(mixins.ListModelMixin,
                   mixins.CreateModelMixin,
                   generics.GenericAPIView):

@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import ProductViewSet, MarketsView, MarketsSingleView, SellerOfMarketList, SellerView, sellers_single_view
+from .views import ProductViewSet, MarketsView, MarketsSingleView, SellerOfMarketList, SellerListView, SellerDetailView, sellers_single_view
 from rest_framework import routers
 
 router = routers.SimpleRouter()
@@ -10,6 +10,6 @@ urlpatterns = [
     path('market/', MarketsView.as_view()),
     path('market/<int:pk>/', MarketsSingleView.as_view(), name='market-detail'),
     path('market/<int:pk>/sellers/', SellerOfMarketList.as_view()),
-    path('seller/', SellerView.as_view()),
-    path('seller/<int:pk>/', sellers_single_view, name='seller_single'),
+    path('seller/', SellerListView.as_view()),
+    path('seller/<int:pk>/', SellerDetailView.as_view()),
 ]
