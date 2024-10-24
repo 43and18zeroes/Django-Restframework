@@ -39,27 +39,9 @@ class SellerOfMarketList(generics.ListCreateAPIView):
         serializer.save(markets=[market])
 
 
-class SellerListView(generics.ListCreateAPIView):
+class SellerViewSet(viewsets.ModelViewSet):
     queryset = Seller.objects.all()
     serializer_class = SellerSerializer
-    
-    
-class SellerDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Seller.objects.all()
-    serializer_class = SellerSerializer
-
-class SellerView(mixins.ListModelMixin,
-                  mixins.CreateModelMixin,
-                  generics.GenericAPIView):
-    
-    queryset = Seller.objects.all()
-    serializer_class = SellerSerializer
-    
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
 
 
 @api_view(['GET', 'DELETE', 'PUT'])
